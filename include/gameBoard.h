@@ -8,6 +8,7 @@ class GameBoard{
 public:
 	static	int **board;
 	static int score;
+	static int end;
 
 
 	

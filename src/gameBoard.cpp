@@ -19,8 +19,10 @@ using namespace std;
 	}
 	int ** GameBoard::board=new int*[4];
 	int GameBoard::score=0;
-	int end=0;
+	int GameBoard::end=0;
 	void keyBoardHandler(int key,int x, int y){
+		if(GameBoard::checkEndCondition()){
+
 		switch(key){
 			case GLUT_KEY_UP:
 				GameBoard::moveUp();
@@ -46,6 +48,11 @@ using namespace std;
 				GameBoard::printBoard();
 				break;
 		}
+		}else{
+			GameBoard::end=1;
+			GameBoard::printBoard();
+		}
+
 	}
 
 	GameBoard::GameBoard(int argc,char** argv){
@@ -108,10 +115,11 @@ using namespace std;
 		int r[3]={217,225,202};
 		int b[3]={222,120,47};
 		int g[3]={0,0,0};	
-		char* name="hellow";	
+		//ar* name="hellow";	
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(1,1,1,0);
 		
+		if(GameBoard::end==0){
 
 		for (int i=0;i<4;i++){
 			for (int j=0;j<4;j++){
@@ -148,22 +156,31 @@ using namespace std;
 			}
 		}
 
-		glRasterPos2f(0.9,0.1);
+		glRasterPos2f(0.1,0.7);
 		stringstream ss;
-		ss<<"Score::"
+		ss<<"Score::";
 		ss<<GameBoard::score;
 		string num=ss.str();
 		for(int i=0;i<num.length();i++)
 			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,num[i]);
 
 		glFlush();
-
+		}else{
+		glColor3d(0,0,0);	
+		glRasterPos2f(0.5,0.5);
+		stringstream ss;
+		ss<<"GameOver\nScore:";
+		ss<<GameBoard::score;
+		string num=ss.str();
+		for(int i=0;i<num.length();i++)
+			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,num[i]);
+		}
 
 
 
 	}
 	int GameBoard::checkEndCondition(){
-		if(checkCanMoveUpDown()==0&&checkCanMoveRightLeft()==0){
+		if(checkCanMoveUpDown()==1&&checkCanMoveRightLeft()==1){
 			return 1;
 		}else{
 			return 0;
@@ -188,15 +205,15 @@ using namespace std;
 	}
 
 	void GameBoard::updateBoard(){
-			cout<<"updating board\n";
+			//cout<<"updating board\n";
 			vector<int> a=freeCells();
 			int limit=a.size();
-			cout<<limit<<"\n";
+			//cout<<limit<<"\n";
 			int rnd=(int)rand()%limit;
 			int spawn_location=a[rnd];
 
 			board[spawn_location/4][spawn_location%4]=2;
-			cout<<"update done\n";
+			//cout<<"update done\n";
 	}
 
 
@@ -237,7 +254,7 @@ using namespace std;
 	}
 					
 	void GameBoard::moveUp(){
-		if(checkMoveUpDown){
+		if(GameBoard::checkCanMoveUpDown){
 		#pragma omp parallel for
 		for(int i=0;i<4;i++){
 			#pragma omp parallel for
@@ -268,7 +285,7 @@ using namespace std;
 			}
 		}
 		}
-		cout<<"moveDown done\n";
+	//	cout<<"moveDown done\n";
 	}
 
 	void GameBoard::moveRight(){
