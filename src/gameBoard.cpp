@@ -1,4 +1,3 @@
-#include"iostream"
 #include"omp.h"
 #include<string>
 #include<stdint.h>
@@ -20,6 +19,7 @@ using namespace std;
 	}
 	int ** GameBoard::board=new int*[4];
 	int GameBoard::score=0;
+	int end=0;
 	void keyBoardHandler(int key,int x, int y){
 		switch(key){
 			case GLUT_KEY_UP:
@@ -148,7 +148,13 @@ using namespace std;
 			}
 		}
 
-		
+		glRasterPos2f(0.9,0.1);
+		stringstream ss;
+		ss<<"Score::"
+		ss<<GameBoard::score;
+		string num=ss.str();
+		for(int i=0;i<num.length();i++)
+			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,num[i]);
 
 		glFlush();
 
@@ -194,7 +200,8 @@ using namespace std;
 	}
 
 
-	void GameBoard::moveUp(){
+	void GameBoard::moveDown(){
+		if(checkCanMoveUpDown()){
 		#pragma omp parallel for
 		for(int i=0;i<4;i++){
 			#pragma omp parallel for
@@ -226,10 +233,11 @@ using namespace std;
 				}
 			}
 		}
+		}
 	}
 					
-	void GameBoard::moveDown(){
-	
+	void GameBoard::moveUp(){
+		if(checkMoveUpDown){
 		#pragma omp parallel for
 		for(int i=0;i<4;i++){
 			#pragma omp parallel for
@@ -259,10 +267,12 @@ using namespace std;
 				}
 			}
 		}
+		}
 		cout<<"moveDown done\n";
 	}
 
 	void GameBoard::moveRight(){
+		if(checkCanMoveRightLeft()){
 		#pragma omp parallel for
 		for(int i=0;i<4;i++){
 			#pragma omp parallel for
@@ -292,9 +302,11 @@ using namespace std;
 				}
 			}
 		}
+		}
 	}
 
 	void GameBoard::moveLeft(){
+		if(checkCanMoveRightLeft()){
 		#pragma omp parallel for
 		for(int i=0;i<4;i++){
 			#pragma omp parallel for
@@ -322,6 +334,7 @@ using namespace std;
 					}
 				}
 			}
+		}
 		}
 	}
 
